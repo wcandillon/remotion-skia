@@ -11,7 +11,7 @@ Config.Bundling.overrideWebpackConfig((currentConfiguration) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   currentConfiguration.plugins!.push(
     new CopyPlugin({
-      patterns: [{ from: "node_modules/canvaskit-wasm/bin/canvaskit.wasm" }],
+      patterns: [{ from: "node_modules/canvaskit-wasm/bin/full/canvaskit.wasm" }],
     })
   );
   return {

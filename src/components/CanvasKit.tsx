@@ -7,16 +7,21 @@ import {
 } from 'react';
 import {useVideoConfig} from 'remotion';
 
+interface Skia {
+  surface: Surface;
+  canvas: Canvas;
+} 
+
 type DrawCallback = (CanvasKit: CanvasKit, canvas: Canvas) => void;
 
 interface CanvasKitViewProps {
 	onDraw: DrawCallback;
 }
 
-// eslint-disable-next-line react-hooks/exhaustive-deps
 export const useDrawCallback = (
 	cb: DrawCallback,
 	deps: Parameters<typeof useCallback>[1]
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 ) => useCallback(cb, deps);
 
 export const CanvasKitView = ({onDraw}: CanvasKitViewProps) => {
@@ -29,14 +34,11 @@ export const CanvasKitView = ({onDraw}: CanvasKitViewProps) => {
 		});
 	}, []);
 
-	const [skia, setSkia] = useState<{
-		surface: Surface;
-		canvas: Canvas;
-	} | null>(null);
+	const [skia, setSkia] = useState<Skia | null>(null);
 
 	useEffect(() => {
 		if (CanvasKit && ref.current) {
-			const surface = CanvasKit.MakeCanvasSurface(ref.current);
+			const surface = CanvasKit.MakeWebGLCanvasSurface(ref.current);
 			if (!surface) {
 				throw 'Could not make surface';
 			}
@@ -56,7 +58,7 @@ export const CanvasKitView = ({onDraw}: CanvasKitViewProps) => {
 		onDraw(CanvasKit, canvas);
 		surface.flush();
 		const t1 = performance.now();
-		console.log('time to draw', t1 - t0);
+		console.log('time to draw', Math.round(t1 - t0));
 	}, [CanvasKit, onDraw, skia]);
 	return <canvas ref={ref} width={width} height={height} />;
 };
