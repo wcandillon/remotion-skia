@@ -1,9 +1,6 @@
-import {useCallback, useState} from 'react'
 import {interpolate} from 'remotion'
-import { useEffect, useCallback } from 'react';
-import { CanvasKitView, useCanvasKit } from './components/CanvasKit';
-import { useCurrentFrame, useVideoConfig } from 'remotion';
-import {continueRender, delayRender} from 'remotion'
+import { CanvasKitView, useDrawCallback } from './components/CanvasKit';
+import { useVideoConfig } from 'remotion';
 import { useLoop, toDeg, mix, polar2Canvas } from './components/Helpers';
 
 	
@@ -11,7 +8,7 @@ export const HelloWorld = () => {
 	const {width, height} = useVideoConfig();
 	const center = { x: width/2, y: height/2 };
 	const progress = useLoop(30 * 3, true);
-	const onDraw = useCallback((CanvasKit, canvas) => {
+	const onDraw = useDrawCallback((CanvasKit, canvas) => {
 		const c1 = CanvasKit.parseColorString("#61bea2");
 		const c2 = CanvasKit.parseColorString("#529ca0");
 		const paint = new CanvasKit.Paint();
@@ -30,11 +27,10 @@ export const HelloWorld = () => {
 			const translateX = mix(progress, 0, x);
 			const translateY = mix(progress, 0, y);
 			const scale = mix(progress, 0.3, 1);
-			paint.setMaskFilter(
-				CanvasKit.MaskFilter.MakeBlur
-			(
+			paint.setMaskFilter(CanvasKit.MaskFilter.MakeBlur(
 					CanvasKit.BlurStyle.Solid,
-					interpolate(progress, [0, 0.5, 1], [0, 45, 30]), false
+					interpolate(progress, [0, 0.5, 1], [0, 45, 30]),
+					false
 				)
 			);
 			paint.setColor(index % 2 ? c1 : c2);

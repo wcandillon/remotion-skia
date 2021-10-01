@@ -1,5 +1,5 @@
 import {useVideoConfig} from 'remotion'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import CanvasKitInit, {CanvasKit, Canvas} from "canvaskit-wasm";
 import { createContext, ReactNode, useContext } from "react";
 import {continueRender, delayRender} from 'remotion';
@@ -31,9 +31,14 @@ export const CanvasKitProvider = ({children}: CanvasKitProviderProps) => {
   )
 };
 
+type DrawCallback = (CanvasKit: CanvasKit, canvas: Canvas) => void
+
 interface CanvasKitViewProps {
-  onDraw: (CanvasKit: CanvasKit, canvas: Canvas) => void;
+  onDraw: DrawCallback;
 }
+
+// eslint-disable-next-line react-hooks/exhaustive-deps
+export const useDrawCallback = (cb: DrawCallback, deps: Parameters<typeof useCallback>[1]) => useCallback(cb, deps);
 
 export const CanvasKitView = ({onDraw}: CanvasKitViewProps) => {
   const {width,height} = useVideoConfig();
@@ -45,7 +50,9 @@ export const CanvasKitView = ({onDraw}: CanvasKitViewProps) => {
 				throw "Could not make surface";
 			}
 			const canvas = surface.getCanvas();
+      const t0 = performance.now();
       onDraw(CanvasKit, canvas);
+      const t1 = performance.now();
       surface.flush();
     }
   }, [CanvasKit, onDraw]);
