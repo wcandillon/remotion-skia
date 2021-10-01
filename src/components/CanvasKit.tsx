@@ -1,6 +1,8 @@
+import {useVideoConfig} from 'remotion'
 import { useState, useEffect } from 'react';
-import CanvasKitInit, {CanvasKit} from "canvaskit-wasm";
+import CanvasKitInit, {CanvasKit, Canvas} from "canvaskit-wasm";
 import { createContext, ReactNode, useContext } from "react";
+import {continueRender, delayRender} from 'remotion';
 
 export type CanvasKitContext = null | CanvasKit;
 
@@ -28,3 +30,26 @@ export const CanvasKitProvider = ({children}: CanvasKitProviderProps) => {
 	</CanvasKitContext.Provider>
   )
 };
+
+interface CanvasKitViewProps {
+  onDraw: (CanvasKit: CanvasKit, canvas: Canvas) => void;
+}
+
+export const CanvasKitView = ({onDraw}: CanvasKitViewProps) => {
+  const {width,height} = useVideoConfig();
+  const CanvasKit = useCanvasKit();
+	useEffect(() => {
+		if (CanvasKit) {
+			const surface = CanvasKit.MakeCanvasSurface("canvas");
+			if (!surface) {
+				throw "Could not make surface";
+			}
+			const canvas = surface.getCanvas();
+      onDraw(CanvasKit, canvas);
+      surface.flush();
+    }
+  }, [CanvasKit, onDraw]);
+  return (
+	  <canvas id="canvas" width={width} height={height} />
+  );
+}
