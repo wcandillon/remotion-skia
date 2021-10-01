@@ -1,0 +1,6 @@
+{
+	"extends": "@remotion",
+	"rules": {
+		"no-redeclare": "off"
+	}
+}

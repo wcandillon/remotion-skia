@@ -1,0 +1,25 @@
+diff --git a/node_modules/canvaskit-wasm/package.json b/node_modules/canvaskit-wasm/package.json
+index 7aa1847..0c78a3b 100644
+--- a/node_modules/canvaskit-wasm/package.json
++++ b/node_modules/canvaskit-wasm/package.json
+@@ -19,5 +19,9 @@
+   "devDependencies": {
+     "dtslint": "^4.0.4",
+     "typescript": "^4.0.3"
++  },
++  "browser": {
++    "fs":false,
++    "path": "path-browserify"
+   }
+ }
+diff --git a/node_modules/canvaskit-wasm/types/index.d.ts b/node_modules/canvaskit-wasm/types/index.d.ts
+index 0ba4087..72a377e 100644
+--- a/node_modules/canvaskit-wasm/types/index.d.ts
++++ b/node_modules/canvaskit-wasm/types/index.d.ts
+@@ -1,5 +1,5 @@
+ // Minimum TypeScript Version: 3.7
+-export function CanvasKitInit(opts: CanvasKitInitOptions): Promise<CanvasKit>;
++export default function CanvasKitInit(opts?: CanvasKitInitOptions): Promise<CanvasKit>;
+ 
+ export interface CanvasKitInitOptions {
+     /**
