@@ -27,7 +27,7 @@ export const HelloWorld = () => {
 			paint.setColor(CanvasKit.RED)
 			paint.setAntiAlias(true);
 			console.log("drawCircle");
-			canvas.drawCircle(width/2, height / 2, 200, paint);
+			canvas.drawCircle(frame * 50, height / 2, 200, paint);
 			shader.delete();
 			surface.flush();
 		}
