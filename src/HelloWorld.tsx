@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useCanvasKit } from './components/CanvasKit';
 import { useCurrentFrame, useVideoConfig } from 'remotion';
-import {continueRender, delayRender} from 'remotion'
 
 
 export const HelloWorld = () => {
@@ -22,19 +21,18 @@ export const HelloWorld = () => {
 				[0, 1],
 				CanvasKit.TileMode.Clamp
 			);
-		
 			const paint = new CanvasKit.Paint();
 			canvas.drawColor(CanvasKit.GREEN);
-			paint.setShader(shader);
+		//	paint.setShader(shader);
+			paint.setColor(CanvasKit.RED)
 			paint.setAntiAlias(true);
-		//	function drawFrame() {
-		//		canvas.drawCircle(width/2, height / 2, 200, paint);
-		//		shader.delete();
-		//	}
+			console.log("drawCircle");
+			canvas.drawCircle(width/2, height / 2, 200, paint);
+			shader.delete();
 			surface.flush();
 		}
-	}, [CanvasKit, frame, height]);
+	}, [CanvasKit, frame, height, width]);
 	return (
-		<canvas id="canvas" style={{ width, height}} />
+		<canvas id="canvas" width={width} height={height} />
 	);
 };
