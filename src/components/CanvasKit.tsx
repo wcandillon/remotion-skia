@@ -52,8 +52,9 @@ export const CanvasKitView = ({onDraw}: CanvasKitViewProps) => {
 			const canvas = surface.getCanvas();
       const t0 = performance.now();
       onDraw(CanvasKit, canvas);
-      const t1 = performance.now();
       surface.flush();
+      const t1 = performance.now();
+      console.log("Draw frame (ms) " + (t1-t0));
     }
   }, [CanvasKit, onDraw]);
   return (
