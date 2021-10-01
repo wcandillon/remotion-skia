@@ -8,38 +8,39 @@ export const HelloWorld = () => {
 	const progress = useLoop(30 * 3, true);
 	const onDraw = useDrawCallback(
 		(CanvasKit, canvas) => {
-			const c1 = CanvasKit.parseColorString('#61bea2');
-			const c2 = CanvasKit.parseColorString('#529ca0');
 			const paint = new CanvasKit.Paint();
-			paint.setBlendMode(CanvasKit.BlendMode.Screen);
-			canvas.save();
-			canvas.translate(center.x, center.y);
-			canvas.rotate(toDeg(mix(progress, -Math.PI, 0)), 0, 0);
-			canvas.translate(-center.x, -center.y);
-			const SIZE = width / 2;
-			new Array(6).fill(0).map((_, index) => {
-				const theta = (index * (2 * Math.PI)) / 6;
-				const {x, y} = polar2Canvas({theta, radius: SIZE / 2}, {x: 0, y: 0});
-				const translateX = mix(progress, 0, x);
-				const translateY = mix(progress, 0, y);
-				const scale = mix(progress, 0.3, 1);
-				paint.setMaskFilter(
-					CanvasKit.MaskFilter.MakeBlur(
-						CanvasKit.BlurStyle.Solid,
-						interpolate(progress, [0, 0.5, 1], [0, 45, 30]),
-						false
-					)
-				);
-				paint.setColor(index % 2 ? c1 : c2);
-				canvas.save();
-				canvas.translate(center.x, center.y);
-				canvas.translate(translateX, translateY);
-				canvas.scale(scale, scale);
-				canvas.translate(-center.x, -center.y);
-				canvas.drawCircle(center.x, center.y, SIZE / 2, paint);
-				canvas.restore();
-			});
-			canvas.restore();
+
+			const prog = `
+			uniform float rad_scale;
+			uniform float2 in_center;
+			uniform float4 in_colors0;
+			uniform float4 in_colors1;
+			
+			half4 main(float2 p) {
+					float2 pp = p - in_center;
+					float radius = sqrt(dot(pp, pp));
+					radius = sqrt(radius);
+					float angle = atan(pp.y / pp.x);
+					float t = (angle + 3.1415926/2) / (3.1415926);
+					t += radius * rad_scale;
+					t = fract(t);
+					return half4(mix(in_colors0, in_colors1, t));
+			}
+			
+			`;
+			
+			const fact = CanvasKit.RuntimeEffect.Make(prog);
+			canvas.clear(CanvasKit.WHITE);
+			const shader = fact.makeShader([
+				Math.sin(Date.now() / 2000) / 5,
+				width/2, height/2,
+				1, 0, 0, 1,
+				0, 1, 0, 1],
+				true /*=opaque*/);
+		
+			paint.setShader(shader);
+			canvas.drawPaint(paint);
+			shader.delete();			
 		},
 		[center.x, center.y, progress, width]
 	);
