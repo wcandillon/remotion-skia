@@ -1,41 +1,11 @@
 import CanvasKitInit, {Canvas, CanvasKit, Surface} from 'canvaskit-wasm';
 import {
-	createContext,
-	ReactNode,
 	useCallback,
-	useContext,
 	useEffect,
 	useRef,
 	useState,
 } from 'react';
 import {useVideoConfig} from 'remotion';
-
-export type CanvasKitContext = null | CanvasKit;
-
-const CanvasKitContext = createContext<CanvasKitContext>(null);
-
-export const useCanvasKit = () => {
-	const canvaskit = useContext(CanvasKitContext);
-	return canvaskit;
-};
-
-interface CanvasKitProviderProps {
-	children: ReactNode | ReactNode[];
-}
-
-export const CanvasKitProvider = ({children}: CanvasKitProviderProps) => {
-	const [canvaskit, setCanvaskit] = useState<CanvasKitContext>(null);
-	useEffect(() => {
-		CanvasKitInit().then((ck) => {
-			setCanvaskit(ck);
-		});
-	}, []);
-	return (
-		<CanvasKitContext.Provider value={canvaskit}>
-			{children}
-		</CanvasKitContext.Provider>
-	);
-};
 
 type DrawCallback = (CanvasKit: CanvasKit, canvas: Canvas) => void;
 
@@ -52,7 +22,12 @@ export const useDrawCallback = (
 export const CanvasKitView = ({onDraw}: CanvasKitViewProps) => {
 	const {width, height} = useVideoConfig();
 	const ref = useRef<HTMLCanvasElement>(null);
-	const CanvasKit = useCanvasKit();
+	const [CanvasKit, setCanvaskit] = useState<null | CanvasKit>(null);
+	useEffect(() => {
+		CanvasKitInit().then((ck) => {
+			setCanvaskit(ck);
+		});
+	}, []);
 
 	const [skia, setSkia] = useState<{
 		surface: Surface;

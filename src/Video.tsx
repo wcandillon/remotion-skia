@@ -1,19 +1,12 @@
 import {Composition} from 'remotion';
 
 import {HelloWorld} from './HelloWorld';
-import {CanvasKitProvider} from "./components/CanvasKit";
-
-const HelloWorldWrapper = () => (
-	<CanvasKitProvider>
-		<HelloWorld />
-	</CanvasKitProvider>
-)
 
 export const RemotionVideo: React.FC = () => {
 	return (
 		<Composition
 			id="HelloWorld"
-			component={HelloWorldWrapper}
+			component={HelloWorld}
 			durationInFrames={100}
 			fps={30}
 			width={1920}
